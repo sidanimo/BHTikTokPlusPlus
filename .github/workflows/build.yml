@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: main
-          submodules: recursive
+          submodules: false
       - name: Install Theos
         run: |
           git clone --recursive https://github.com/theos/theos.git $HOME/theos
