@@ -3,7 +3,7 @@
 NSArray *jailbreakPaths;
 
 static void showConfirmation(void (^okHandler)(void)) {
-  [%c(AWEUIAlertView) showAlertWithTitle:@"BHTikTok, Hi" description:@"Are you sure?" image:nil actionButtonTitle:@"Yes" cancelButtonTitle:@"No" actionBlock:^{
+  [%c(AWEUIAlertView) showAlertWithTitle:@"TikTok+" description:@"Are you sure?" image:nil actionButtonTitle:@"Yes" cancelButtonTitle:@"No" actionBlock:^{
     okHandler();
   } cancelBlock:nil];
 }
@@ -271,8 +271,8 @@ static BOOL isAuthenticationShowed = FALSE;
         TTKSettingsBaseCellPlugin *BHTikTokSettingsPluginCell = [[%c(TTKSettingsBaseCellPlugin) alloc] initWithPluginContext:self.context];
 
         AWESettingItemModel *BHTikTokSettingsItemModel = [[%c(AWESettingItemModel) alloc] initWithIdentifier:@"bhtiktok_settings"];
-        [BHTikTokSettingsItemModel setTitle:@"BHTikTok++ settings"];
-        [BHTikTokSettingsItemModel setDetail:@"BHTikTok++ settings"];
+        [BHTikTokSettingsItemModel setTitle:@"TikTok+ Settings"];
+        [BHTikTokSettingsItemModel setDetail:@"TikTok+ Settings"];
         [BHTikTokSettingsItemModel setIconImage:[UIImage systemImageNamed:@"gear"]];
         [BHTikTokSettingsItemModel setType:99];
 
@@ -818,7 +818,9 @@ static BOOL isAuthenticationShowed = FALSE;
 %hook UIButton // follow confirmation broken 
 - (void)_onTouchUpInside {
     if ([BHIManager followConfirmation] && [self.currentTitle isEqualToString:@"Follow"]) {
-        showConfirmation(^(void) { %orig; });
+        showConfirmation(^(void) {
+        %orig;
+    });
     } else {
         %orig;
     }
@@ -827,7 +829,9 @@ static BOOL isAuthenticationShowed = FALSE;
 %hook AWEPlayInteractionUserAvatarElement
 - (void)onFollowViewClicked:(id)sender {
     if ([BHIManager followConfirmation]) {
-        showConfirmation(^(void) { %orig; });
+        showConfirmation(^(void) {
+        %orig;
+    });
     } else {
         return %orig;
     }
@@ -900,7 +904,9 @@ static BOOL isAuthenticationShowed = FALSE;
 %hook AWEFeedVideoButton // like feed confirmation
 - (void)_onTouchUpInside {
     if ([BHIManager likeConfirmation] && [self.imageNameString isEqualToString:@"ic_like_fill_1_new"]) {
-        showConfirmation(^(void) { %orig; });
+        showConfirmation(^(void) {
+        %orig;
+    });
     } else {
         %orig;
     }
@@ -909,14 +915,18 @@ static BOOL isAuthenticationShowed = FALSE;
 %hook AWECommentPanelCell // like/dislike comment confirmation
 - (void)onLikeAction:(id)arg1 {
     if ([BHIManager likeCommentConfirmation]) {
-        showConfirmation(^(void) { %orig; });
+        showConfirmation(^(void) {
+        %orig;
+    });
     } else {
         return %orig;
     }
 }
 - (void)onDislikeAction:(id)arg1 {
     if ([BHIManager dislikeCommentConfirmation]) {
-        showConfirmation(^(void) { %orig; });
+        showConfirmation(^(void) {
+        %orig;
+    });
     } else {
         return %orig;
     }
@@ -1186,7 +1196,7 @@ static BOOL isAuthenticationShowed = FALSE;
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         pasteboard.string = [downloadableURL absoluteString];
     } else {
-        [%c(AWEUIAlertView) showAlertWithTitle:@"BHTikTok, Hi" description:@"Could Not Copy Music." image:nil actionButtonTitle:@"OK" cancelButtonTitle:nil actionBlock:nil cancelBlock:nil];
+        [%c(AWEUIAlertView) showAlertWithTitle:@"TikTok+" description:@"Could Not Copy Music." image:nil actionButtonTitle:@"OK" cancelButtonTitle:nil actionBlock:nil cancelBlock:nil];
     }
 }
 %new - (void)copyVideo:(AWEAwemeBaseViewController *)rootVC {
@@ -1195,7 +1205,7 @@ static BOOL isAuthenticationShowed = FALSE;
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         pasteboard.string = [downloadableURL absoluteString];
     } else {
-        [%c(AWEUIAlertView) showAlertWithTitle:@"BHTikTok, Hi" description:@"The video dosen't have music to download." image:nil actionButtonTitle:@"OK" cancelButtonTitle:nil actionBlock:nil cancelBlock:nil];
+        [%c(AWEUIAlertView) showAlertWithTitle:@"TikTok+" description:@"The video dosen't have music to download." image:nil actionButtonTitle:@"OK" cancelButtonTitle:nil actionBlock:nil cancelBlock:nil];
     }
 }
 %new - (void)copyDecription:(AWEAwemeBaseViewController *)rootVC {
@@ -1204,7 +1214,7 @@ static BOOL isAuthenticationShowed = FALSE;
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         pasteboard.string = video_description;
     } else {
-        [%c(AWEUIAlertView) showAlertWithTitle:@"BHTikTok, Hi" description:@"The video dosen't have music to download." image:nil actionButtonTitle:@"OK" cancelButtonTitle:nil actionBlock:nil cancelBlock:nil];
+        [%c(AWEUIAlertView) showAlertWithTitle:@"TikTok+" description:@"The video dosen't have music to download." image:nil actionButtonTitle:@"OK" cancelButtonTitle:nil actionBlock:nil cancelBlock:nil];
     }
 }
 %new - (void) downloadButtonHandler:(UIButton *)sender {
@@ -1546,7 +1556,7 @@ static BOOL isAuthenticationShowed = FALSE;
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         pasteboard.string = [downloadableURL absoluteString];
     } else {
-        [%c(AWEUIAlertView) showAlertWithTitle:@"BHTikTok, Hi" description:@"The video dosen't have music to download." image:nil actionButtonTitle:@"OK" cancelButtonTitle:nil actionBlock:nil cancelBlock:nil];
+        [%c(AWEUIAlertView) showAlertWithTitle:@"TikTok+" description:@"The video dosen't have music to download." image:nil actionButtonTitle:@"OK" cancelButtonTitle:nil actionBlock:nil cancelBlock:nil];
     }
 }
 %new - (void)copyVideo:(AWEAwemeBaseViewController *)rootVC {
@@ -1555,7 +1565,7 @@ static BOOL isAuthenticationShowed = FALSE;
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         pasteboard.string = [downloadableURL absoluteString];
     } else {
-        [%c(AWEUIAlertView) showAlertWithTitle:@"BHTikTok, Hi" description:@"The video dosen't have music to download." image:nil actionButtonTitle:@"OK" cancelButtonTitle:nil actionBlock:nil cancelBlock:nil];
+        [%c(AWEUIAlertView) showAlertWithTitle:@"TikTok+" description:@"The video dosen't have music to download." image:nil actionButtonTitle:@"OK" cancelButtonTitle:nil actionBlock:nil cancelBlock:nil];
     }
 }
 %new - (void)copyDecription:(AWEAwemeBaseViewController *)rootVC {
@@ -1564,7 +1574,7 @@ static BOOL isAuthenticationShowed = FALSE;
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         pasteboard.string = video_description;
     } else {
-        [%c(AWEUIAlertView) showAlertWithTitle:@"BHTikTok, Hi" description:@"The video dosen't have music to download." image:nil actionButtonTitle:@"OK" cancelButtonTitle:nil actionBlock:nil cancelBlock:nil];
+        [%c(AWEUIAlertView) showAlertWithTitle:@"TikTok+" description:@"The video dosen't have music to download." image:nil actionButtonTitle:@"OK" cancelButtonTitle:nil actionBlock:nil cancelBlock:nil];
     }
 }
 %new - (void) downloadButtonHandler:(UIButton *)sender {
@@ -1850,6 +1860,32 @@ static BOOL isAuthenticationShowed = FALSE;
 
 
 %ctor {
+    // Pre-configured defaults: enable the useful features out of the box,
+    // keep the junk (fakes/flex/confirmations) off. Non-destructive.
+    [[NSUserDefaults standardUserDefaults] registerDefaults:@{
+        // ON — useful
+        @"hide_ads": @YES,
+        @"download_button": @YES,
+        @"remove_watermark": @YES,
+        @"upload_hd": @YES,
+        @"share_sheet": @YES,
+        @"show_porgress_bar": @YES,
+        @"auto_play": @YES,
+        @"disable_unsensitive": @YES,
+        @"save_profile": @YES,
+        @"copy_profile_information": @YES,
+        // OFF — junk / vanity / annoyances
+        @"en_fake": @NO,
+        @"fake_verify": @NO,
+        @"follower_count": @NO,
+        @"following_count": @NO,
+        @"flex_enebaled": @NO,
+        @"like_confirm": @NO,
+        @"like_comment_confirm": @NO,
+        @"dislike_comment_confirm": @NO,
+        @"follow_confirm": @NO,
+    }];
+
     jailbreakPaths = @[
         @"/Applications/Cydia.app", @"/Applications/blackra1n.app",
         @"/Applications/FakeCarrier.app", @"/Applications/Icy.app",

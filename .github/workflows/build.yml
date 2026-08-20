@@ -1,0 +1,74 @@
+name: Build TikTok (sideloaded)
+on:
+  workflow_dispatch:
+    inputs:
+      sdk_version:
+        description: "iOS SDK Version"
+        default: "16.5"
+        required: true
+        type: string
+      decrypted_ipa_url:
+        description: "Direct URL of the decrypted TikTok ipa"
+        default: ""
+        required: true
+        type: string
+      app_name:
+        description: "Output app/file name"
+        default: "TikTok"
+        required: true
+        type: string
+      upload_artifact:
+        description: "Upload IPA as artifact"
+        default: true
+        required: false
+        type: boolean
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    name: Build TikTok
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: main
+          submodules: recursive
+      - name: Install Theos
+        run: |
+          git clone --recursive https://github.com/theos/theos.git $HOME/theos
+          echo "THEOS=$HOME/theos" >> "$GITHUB_ENV"
+      - name: Install Theos SDKs
+        run: |
+          git clone --depth 1 https://github.com/theos/sdks.git /tmp/sdks
+          mv /tmp/sdks/iPhoneOS${{ inputs.sdk_version }}.sdk $HOME/theos/sdks/ || cp -r /tmp/sdks/*.sdk $HOME/theos/sdks/
+      - name: Install tooling
+        run: |
+          brew install ldid dpkg make
+          pip3 install --break-system-packages https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip || pip3 install https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip
+      - name: Prepare decrypted TikTok IPA
+        run: |
+          wget "${{ inputs.decrypted_ipa_url }}" --no-verbose -O /tmp/tiktok.ipa
+          unzip -q /tmp/tiktok.ipa -d /tmp/ttbase
+          APP=$(ls -d /tmp/ttbase/Payload/*.app | head -1)
+          TT_VERSION=$(plutil -extract CFBundleShortVersionString raw "$APP/Info.plist")
+          echo "TT_VERSION=${TT_VERSION}" >> "$GITHUB_ENV"
+          echo "TikTok base version: ${TT_VERSION}"
+      - name: Build + inject
+        run: |
+          cd main
+          export THEOS=$HOME/theos
+          export PATH=$(brew --prefix make)/libexec/gnubin:$PATH
+          bash build.sh /tmp/tiktok.ipa "${{ inputs.app_name }}"
+      - name: Rename with version
+        run: mv "main/packages/${{ inputs.app_name }}.ipa" "main/packages/${{ inputs.app_name }}-v${TT_VERSION}.ipa"
+      - name: Upload artifact
+        if: ${{ inputs.upload_artifact }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.app_name }}-v${{ env.TT_VERSION }}
+          path: main/packages/${{ inputs.app_name }}-v${{ env.TT_VERSION }}.ipa
+          if-no-files-found: error
